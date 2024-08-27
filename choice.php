@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accueil</title>
+    <title>Choix du Service</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,17 +38,17 @@
             object-fit: contain;
         }
 
-        .choice-container {
+        .emporterSurPlace {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            height: 40vh;
+            height: 40vh; 
         }
 
         .buttonChoix {
             background-color: rgba(243, 243, 243, 0.962);
-            height: 200px;
-            width: 350px;
+            height: 200px; 
+            width: 350px; 
             border-radius: 6px;
             display: flex;
             flex-direction: column;
@@ -61,7 +61,7 @@
 
         .buttonChoix img {
             margin-right: 10px;
-            width: 10vh;
+            width: 10vh; 
             margin-bottom: 15px;
         }
 
@@ -79,28 +79,40 @@
             border: none;
             border-radius: 5px;
         }
+
+        #button-back {
+            font-family: 'Roboto';
+            font-weight: 800;
+            display: flex;
+            margin: auto;
+            margin-top: 15px;
+            justify-content: center;
+            width: 10vh;
+        }
     </style>
 </head>
 <body>
 
     <div class="banniere">
-        <img src="img/1.jpg" alt="">
-        <img src="img/2.jpg" alt="">
-        <img src="img/3.jpg" alt="">
+        <img src="img/1.jpg" alt="image avec logo">
+        <img src="img/2.jpg" alt="image avec un kebab">
+        <img src="img/3.jpg" alt="image un logo open">
     </div>
-    <h2>BIENVENUE</h2>
-    <div class="choice-container">
-        <a id="connecter" class="buttonChoix" onclick="selectChoice('connecter')" href="#">
-            <img src="img/icons/se-connecter.png" alt="icon d'un compte">
-            SE CONNECTER
+    <h2>CHOISISSEZ VOTRE MODE DE SERVICE</h2>
+    <div class="emporterSurPlace">
+        <a id="surPlace" class="buttonChoix" onclick="selectChoice('surPlace')" href="#">
+            <img src="img/icons/fourchette-et-couteau.png" alt="Fourchette et couteau">
+            SUR PLACE
         </a>
-        <a id="inviter" class="buttonChoix" onclick="selectChoice('inviter')" href="#">
-            <img src="img/icons/aucun-profil.png" alt="icon d'un compte barré">
-            CONTINUER EN TANT QU'INVITÉ
+        <a id="emporter" class="buttonChoix" onclick="selectChoice('emporter')" href="#">
+            <img src="img/icons/a-emporter.png" alt="sac à emporter">
+            À EMPORTER
         </a>
     </div>
 
     <button id="continueBtn">CONTINUER</button>
+    <a href="index.php" id="button-back" class="btn btn-secondary mb-3">RETOUR</a>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
@@ -116,12 +128,10 @@
         }
 
         document.getElementById('continueBtn').addEventListener('click', () => {
-            if (selectedChoice === 'connecter') {
-                window.location.href = 'login.php';
-            } else if (selectedChoice === 'inviter') {
-                window.location.href = 'connect_as_guest.php';
+            if (selectedChoice) {
+                window.location.href = 'menu.php';
             } else {
-                alert('Veuillez sélectionner une option.');
+                alert('Veuillez sélectionner un mode de service.');
             }
         });
     </script>
