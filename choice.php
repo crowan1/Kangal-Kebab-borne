@@ -1,6 +1,5 @@
 <?php 
 session_start(); 
-
 if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
     header("location: ./index.php"); 
     exit; 
@@ -117,10 +116,7 @@ if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
             À EMPORTER
         </a>
     </div>
-
-    <!-- <button id="continueBtn">CONTINUER</button>
-    <a href="index.php" id="button-back" class="btn btn-secondary mb-3">RETOUR</a>
-     -->
+ 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -139,7 +135,6 @@ if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
             if (selectedChoice) {
                 sessionStorage.setItem('modeService', selectedChoice);
                 sessionStorage.setItem('getCommande', selectedChoice === 'surPlace' ? 'Sur place' : 'À emporter');
-                // window.location.href = 'menu.php';
             } else {
                 alert('Veuillez sélectionner un mode de service.');
             }

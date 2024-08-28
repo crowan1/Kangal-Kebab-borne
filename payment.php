@@ -1,23 +1,16 @@
 <?php
 session_start(); 
 
-// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-//     $cartData = $_POST['cart-data'] ?? '[]';
-//     $cart = json_decode($cartData, true);
+if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+    echo "<p>Votre panier est vide. Veuillez retourner au menu et ajouter des articles à votre panier.</p>";
+    echo '<a href="menu.php" class="btn btn-primary">Retourner au menu</a>';
+    exit();
+}
 
-//     // if (empty($cart)) {
-//     //     header('Location: basket.php');
-//     //     exit();
-//     // }
-
-//     $total = 0;
-//     foreach ($cart as $item) {
-//         $total += $item['price'];
-//     }
-// } else {
-//     header('Location: basket.php');
-//     exit();
-// }
+$total = 0;
+foreach ($_SESSION['cart'] as $item) {
+    $total += $item['price'] * $item['quantity'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -159,30 +152,21 @@ session_start();
         <img src="img/3.jpg" alt="Image 3">
     </div>
 
-    <div class="container-payment">
-        <div class="payment-box">
+    <div class="container">
+        <div class="payment-box mt-5">
             <h1>Confirmation de Paiement</h1>
             <p>Total du panier : <?php echo number_format($total, 2, ',', ' '); ?>€</p>
 
-            <!-- todo 
-
-            payer en espece :  href="confirmation.php?method=espece"
-            payer par carte :  href="confirmation.php?method=carte"
-            
-            -->
-            <div class="payment-options">
-                <form action="confirm.php" method="post">
-                    <!-- <input type="hidden" name="cart-data" value='<?php echo htmlspecialchars(json_encode($cart)); ?>'>
-                    <input type="hidden" name="total" value="<?php echo htmlspecialchars($total); ?>"> -->
-
-                    <div>
-                        <img src="img/icons/paiement-par-carte-de-credit.png" alt="Carte Bleue">
-                        <button type="submit" name="payment-method" value="card">Payer par Carte Bleue</button>
+            <div class="payment-options mt-4">
+                <form action="confi.php" method="post">
+                    <div class="mb-3">
+                        <img src="img/icons/paiement-par-carte-de-credit.png" alt="Carte Bleue" style="width: 50px;">
+                        <button type="submit" name="payment-method" value="card" class="btn btn-primary">Payer par Carte Bleue</button>
                     </div>
                     
-                    <div>
-                        <img src="img/icons/en-especes.png" alt="Espèces">
-                        <button type="submit" name="payment-method" value="cash">Payer en Espèces</button>
+                    <div class="mb-3">
+                        <img src="img/icons/en-especes.png" alt="Espèces" style="width: 50px;">
+                        <button type="submit" name="payment-method" value="cash" class="btn btn-secondary">Payer en Espèces</button>
                     </div>
                 </form>
                 <a href="basket.php" class="btn btn-secondary mt-3">Retour au Panier</a>

@@ -51,7 +51,7 @@
     flex-wrap: wrap;
     height: 58vh;
     position: fixed;
-    overflow-x: scroll;
+    overflow-y: scroll;
 }
 
 .menu {

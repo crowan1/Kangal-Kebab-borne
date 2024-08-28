@@ -1,95 +1,26 @@
 <?php
 session_start();
+if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
+    header("location: ./index.php"); 
+    exit; 
+}
+
 $_SESSION['method'] = '';
 if(isset($_GET["method"]) && !empty($_GET["method"])){
     $_SESSION['method'] = $_GET["method"];
 } 
 include("db.php");
 
+
+echo"<pre";
+var_dump($_SESSION);
+echo "</pre>";
+
 function isLoggedIn() {
     return isset($_SESSION['user_id']);
 }
 
 
-// echo "<pre>";
-// var_dump($_SESSION);
-// echo "</pre>";
-// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  
-
-//     // Normaliser les données du panier
-//     foreach ($_SESSION['cart'] as $key => &$item) {
-//         // Vérifiez que chaque article a les clés nécessaires
-//         if (!isset($item['id']) || !isset($item['quantity']) || !isset($item['price'])) {
-//             echo "Erreur : un ou plusieurs articles dans le panier sont invalides.";
-//             var_dump($item); // Affichez l'élément invalide pour le débogage
-//             exit();
-       
-//         }
-
-//         // Vérifiez que 'price' est un nombre sans devise
-//         $item['price'] = floatval(preg_replace('/[^\d.]/', '', $item['price']));
-
-//         // Assurez-vous que 'quantity' est un entier
-//         $item['quantity'] = intval($item['quantity']);
-
-//         // Si l'ID n'est pas un entier, il y a un problème
-//         if (!is_int($item['id']) || $item['id'] <= 0) {
-//             echo "Erreur : ID de produit invalide.";
-//             var_dump($item); // Affichez l'élément invalide pour le débogage
-//             exit();
-//         }
-//     }
-
-//     if (isset($_POST['action']) && $_POST['action'] === 'checkout') {
-//         if (empty($_SESSION['cart'])) {
-//             echo "Erreur : Votre panier est vide.";
-//             exit();
-//         }
-
-//         $total_price = 0;
-
-//         foreach ($_SESSION['cart'] as $item) {
-//             $total_price += $item['price'] * $item['quantity'];
-//         }
-
-//         $modeService = $_SESSION['modeService'] ?? 'Non spécifié';
-//         $getCommande = $_SESSION['getCommande'] ?? 'Non spécifié';
-
-//         // Créer la commande dans la table 'orders'
-//         $stmt = $pdo->prepare("INSERT INTO orders (user_id, total_price, modeService, getCommande) VALUES (:user_id, :total_price, :modeService, :getCommande)");
-//         $stmt->execute([
-//             ':user_id' => $_SESSION['user_id'],
-//             ':total_price' => $total_price,
-//             ':modeService' => $modeService,
-//             ':getCommande' => $getCommande
-//         ]);
-
-//         $order_id = $pdo->lastInsertId();
-
-//         // Ajouter chaque élément du panier à la table 'order_items'
-//         foreach ($_SESSION['cart'] as $item) {
-//             $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, sauces, crudites, supplements, boisson) VALUES (:order_id, :product_id, :quantity, :price, :sauces, :crudites, :supplements, :boisson)");
-//             $stmt->execute([
-//                 ':order_id' => $order_id,
-//                 ':product_id' => $item['id'],
-//                 ':quantity' => $item['quantity'],
-//                 ':price' => $item['price'],
-//                 ':sauces' => isset($item['sauces']) ? json_encode($item['sauces']) : null,
-//                 ':crudites' => isset($item['crudites']) ? json_encode($item['crudites']) : null,
-//                 ':supplements' => isset($item['supplements']) ? json_encode($item['supplements']) : null,
-//                 ':boisson' => isset($item['boisson']) ? $item['boisson'] : null
-//             ]);
-//         }
-
-//         // Vider le panier après la commande
-//         $_SESSION['cart'] = [];
-
-//         // Rediriger vers la page de confirmation
-//         header("Location: confirmation.php");
-//         exit();
-//     }
-// }
 
 ?>
 
@@ -126,7 +57,8 @@ function isLoggedIn() {
 
 <?php
 try {
-    // Afficher les catégories
+    include("db.php");
+
     $stmtCategories = $pdo->query("SELECT id, name FROM categories ORDER BY id");
 
     echo '<div class="categorie">';
@@ -137,7 +69,6 @@ try {
     echo '</ul>';
     echo '</div>';
 
-    // Afficher les produits
     $stmtProducts = $pdo->query("SELECT id, name, description, price, image, category_id FROM products");
 
     echo '<div class="menus">';
@@ -157,7 +88,7 @@ try {
     echo 'Erreur : ' . $e->getMessage();
 }
 ?>
-
+<!-- Modal pour ajouter au panier  -->
 <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -175,6 +106,9 @@ try {
         </div>
     </div>
 </div>
+
+
+
 
 <?php include('basket-menu.php'); ?>
 
@@ -211,71 +145,50 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // document.getElementById('confirmAddToCart').addEventListener('click', function () {
-        // if (selectedProduct) {
-        //     if (!sessionStorage.getItem('cart')) {
-        //         sessionStorage.setItem('cart', JSON.stringify([]));
-        //     }
-
-        //     const cart = JSON.parse(sessionStorage.getItem('cart'));
-
-        //     const existingProductIndex = cart.findIndex(item => item.id === selectedProduct.id);
-
-        //     if (existingProductIndex !== -1) {
-        //         cart[existingProductIndex].quantity += 1;
-        //     } else {
-        //         selectedProduct.quantity = 1; 
-        //         cart.push(selectedProduct);
-        //     }
-
-        //     sessionStorage.setItem('cart', JSON.stringify(cart));
-        //     updateCartDisplay(cart);
-
-        //     const modal = bootstrap.Modal.getInstance(document.getElementById('addToCartModal'));
-        //     modal.hide();
-        // }
-    // });
-
-    // function updateCartDisplay(cart) {
-    //     let cartHTML = '';
-    //     let total = 0;
-    //     cart.forEach(item => {
-    //         cartHTML += `<p>${item.name} - ${item.quantity} x ${item.price}€</p>`;
-    //         total += item.price * item.quantity;
-    //     });
-    //     document.getElementById('cart-items').innerHTML = cartHTML || '<p>Votre panier est vide.</p>';
-    //     document.getElementById('bouton-panier').innerHTML = `Total de votre commande: ${total.toFixed(2)}€`;
-    // }
-
-    // if (sessionStorage.getItem('cart')) {
-    //     updateCartDisplay(JSON.parse(sessionStorage.getItem('cart')));
-    // }
-
-
     document.getElementById('confirmAddToCart').addEventListener('click', function () {
-                const productId = this.getAttribute('data-product-id');
-                const quantity = this.getAttribute('data-quantity');
-
-                fetch('add_panier.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `product_id=${productId}&quantity=${quantity}`,
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            alert(data.message);
-                        } else {
-                            alert('Erreur: ' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                    });
+        if (selectedProduct) {
+            fetch('add_panier.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `product_id=${selectedProduct.id}&quantity=1`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    updateCartDisplay();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
             });
 
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addToCartModal'));
+            modal.hide();
+        }
+    });
+
+    function updateCartDisplay() {
+        fetch('get_cart.php')
+        .then(response => response.json())
+        .then(data => {
+            let cartHTML = '';
+            let total = 0;
+            data.cart.forEach(item => {
+                cartHTML += `<p>${item.name} - ${item.quantity} x ${item.price}€</p>`;
+                total += item.price * item.quantity;
+            });
+            document.getElementById('cart-items').innerHTML = cartHTML || '<p>Votre panier est vide.</p>';
+            document.getElementById('bouton-panier').innerHTML = `Total de votre commande: ${total.toFixed(2)}€`;
+        })
+        .catch(error => console.error('Erreur:', error));
+    }
+
+    updateCartDisplay();
 });
 </script>
 

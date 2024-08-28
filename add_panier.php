@@ -1,32 +1,40 @@
 <?php
 session_start();
+include("db.php");  
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
- 
     $productId = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
 
     if ($productId > 0 && $quantity > 0) {
-       
-        if (!isset($_SESSION['panier'])) {
-            $_SESSION['panier'] = [];
+        if (!isset($_SESSION['cart'])) {
+            $_SESSION['cart'] = [];
         }
 
-        
-        if (isset($_SESSION['panier'][$productId])) {
-            $_SESSION['panier'][$productId] += $quantity;
+        $stmt = $pdo->prepare("SELECT id, name, price, points FROM products WHERE id = :id");
+        $stmt->execute([':id' => $productId]);
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($product) { 
+            if (isset($_SESSION['cart'][$productId])) {
+                $_SESSION['cart'][$productId]['quantity'] += $quantity;
+            } else {
+                $_SESSION['cart'][$productId] = [
+                    'id' => $product['id'],
+                    'name' => $product['name'],
+                    'price' => $product['price'],
+                    'points' => $product['points'],
+                    'quantity' => $quantity
+                ];
+            }
+
+            echo json_encode(['status' => 'success', 'message' => 'Produit ajouté au panier']);
         } else {
-            $_SESSION['panier'][$productId] = $quantity;
+            echo json_encode(['status' => 'error', 'message' => 'Produit non trouvé']);
         }
-
-        // Réponse pour indiquer que le produit a été ajouté avec succès
-        echo json_encode(['status' => 'success', 'message' => 'Produit ajouté au panier']);
     } else {
-        // Réponse en cas d'erreur de données
         echo json_encode(['status' => 'error', 'message' => 'Données invalides']);
     }
 } else {
-    // Réponse en cas de méthode incorrecte
     echo json_encode(['status' => 'error', 'message' => 'Requête invalide']);
 }
-?>
