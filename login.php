@@ -1,30 +1,5 @@
 <?php
 session_start();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pdo = new PDO('mysql:host=localhost;dbname=kangalkebab', 'root', 'root');
-
-    $code = $_POST['code'];
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE code = :code OR email = :code");
-    $stmt->execute(['code' => $code]);
-    $user = $stmt->fetch();
-
-    if ($user) {
-
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['first_name'] = $user['first_name'];
-        $_SESSION['last_name'] = $user['last_name'];
-        $_SESSION['email'] = $user['email'];
-
-
-        header("Location: menu.php");
-        exit;
-    } else {
-
-        echo "<script>alert('Identifiant incorrect.');</script>";
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -33,9 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -137,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container-login">
         <div class="login-box">
             <h2>Se connecter</h2>
-            <form id="loginForm" method="POST">
+            <form id="loginForm" action="./login_back.php" method="POST">
                 <div class="mb-3">
                     <input type="text" class="form-control" id="username" name="code" placeholder="Entrez votre code ou email" required>
                 </div>
@@ -146,6 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

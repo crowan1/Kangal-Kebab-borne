@@ -1,27 +1,22 @@
 <?php
 session_start();
+require "./db.php";
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([2]);
+$user = $stmt->fetch();
 
-try {
-    $pdo = new PDO('mysql:host=localhost;dbname=kangalkebab', 'root', 'root');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erreur de connexion : " . $e->getMessage());
-}
+var_dump($user);
 
-$stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-$stmt->execute(['email' => 'borne@gmail.com']);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($user) {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['first_name'] = $user['first_name'];
     $_SESSION['last_name'] = $user['last_name'];
     $_SESSION['email'] = $user['email'];
+    $_SESSION['user_type'] = 'connecter'; 
 
-    header("Location: menu.php");
+    header("Location: choice.php");
     exit;
 } else {
-    header("Location: index.php");
-    exit;
+    echo "<script>alert('Identifiant incorrect.');</script>";
 }
-?>

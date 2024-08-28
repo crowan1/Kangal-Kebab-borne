@@ -1,23 +1,23 @@
 <?php
 session_start(); 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $cartData = $_POST['cart-data'] ?? '[]';
-    $cart = json_decode($cartData, true);
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     $cartData = $_POST['cart-data'] ?? '[]';
+//     $cart = json_decode($cartData, true);
 
-    if (empty($cart)) {
-        header('Location: basket.php');
-        exit();
-    }
+//     // if (empty($cart)) {
+//     //     header('Location: basket.php');
+//     //     exit();
+//     // }
 
-    $total = 0;
-    foreach ($cart as $item) {
-        $total += $item['price'];
-    }
-} else {
-    header('Location: basket.php');
-    exit();
-}
+//     $total = 0;
+//     foreach ($cart as $item) {
+//         $total += $item['price'];
+//     }
+// } else {
+//     header('Location: basket.php');
+//     exit();
+// }
 ?>
 
 <!DOCTYPE html>
@@ -164,10 +164,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1>Confirmation de Paiement</h1>
             <p>Total du panier : <?php echo number_format($total, 2, ',', ' '); ?>€</p>
 
+            <!-- todo 
+
+            payer en espece :  href="confirmation.php?method=espece"
+            payer par carte :  href="confirmation.php?method=carte"
+            
+            -->
             <div class="payment-options">
                 <form action="confirm.php" method="post">
-                    <input type="hidden" name="cart-data" value='<?php echo htmlspecialchars(json_encode($cart)); ?>'>
-                    <input type="hidden" name="total" value="<?php echo htmlspecialchars($total); ?>">
+                    <!-- <input type="hidden" name="cart-data" value='<?php echo htmlspecialchars(json_encode($cart)); ?>'>
+                    <input type="hidden" name="total" value="<?php echo htmlspecialchars($total); ?>"> -->
 
                     <div>
                         <img src="img/icons/paiement-par-carte-de-credit.png" alt="Carte Bleue">

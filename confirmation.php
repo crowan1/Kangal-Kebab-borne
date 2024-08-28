@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+echo "<pre>";
+var_dump($_SESSION);
+echo "</pre>";
+exit; 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cartData = $_POST['cart-data'] ?? '[]';
     $cart = json_decode($cartData, true);
@@ -73,32 +80,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .basket-item {
             margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
         }
 
         .basket-item h4 {
-            margin: 0;
+            margin: 0 0 10px;
+            font-weight: 700;
         }
 
         .basket-item p {
-            margin: 5px 0;
+            margin: 0;
+            color: #555;
         }
 
         .btn-submit {
-            background: #FFBB25;
+            background-color: #FFBB25;
             border: none;
             color: white;
-            padding: 1vh 5vh;
+            padding: 10px 20px;
             border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-submit:hover {
+            background-color: #ffa31a;
         }
 
         .button-left-basket {
+            display: block;
+            text-align: center;
             background-color: #FFBB25;
             color: white;
-            padding: 1vh 5vh;
+            padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
+            margin-top: 20px;
         }
 
+        .button-left-basket:hover {
+            background-color: #ffa31a;
+        }
 
         @media (max-width: 576px) {
             .banniere {
@@ -110,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .basket-box {
-                padding: 30px;
+                padding: 20px;
             }
         }
     </style>
@@ -133,15 +159,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="hidden" name="cart-data" value='<?php echo htmlspecialchars(json_encode($cart)); ?>'>
                     <?php foreach ($cart as $item): ?>
                         <div class="basket-item">
-                            <h4><?php echo htmlspecialchars($item['name']); ?> - <?php echo htmlspecialchars($item['price']); ?>€</h4>
-                            <p><strong>Suppléments:</strong> <?php echo htmlspecialchars(implode(', ', $item['supplements'])); ?></p>
+                            <h4><?php echo htmlspecialchars($item['name']); ?> - <?php echo number_format($item['price'], 2); ?>€</h4>
+                            <p><strong>Quantité:</strong> <?php echo htmlspecialchars($item['quantity']); ?></p>
+                            <?php if (!empty($item['supplements'])): ?>
+                                <p><strong>Suppléments:</strong> <?php echo htmlspecialchars(implode(', ', $item['supplements'])); ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($item['sauces'])): ?>
+                                <p><strong>Sauces:</strong> <?php echo htmlspecialchars(implode(', ', $item['sauces'])); ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($item['crudites'])): ?>
+                                <p><strong>Crudités:</strong> <?php echo htmlspecialchars(implode(', ', $item['crudites'])); ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($item['boisson'])): ?>
+                                <p><strong>Boisson:</strong> <?php echo htmlspecialchars($item['boisson']); ?></p>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                     <button type="submit" class="btn-submit">Aller au Paiement</button>
                 </form>
             <?php endif; ?>
-            <br>
-            <a class="button-left-basket" href="menu.php">Continuer de commander </a>
+            <a class="button-left-basket" href="menu.php">Continuer de commander</a>
         </div>
     </div>
 

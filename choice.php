@@ -1,20 +1,28 @@
+<?php 
+session_start(); 
+
+if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
+    header("location: ./index.php"); 
+    exit; 
+}
+
+
+
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choix du Service</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=New+Amsterdam&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap" rel="stylesheet">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Roboto';
+            font-family: 'Roboto', sans-serif;
             font-weight: 800;
         }
 
@@ -34,7 +42,7 @@
         }
 
         .banniere img {
-            width: 33.33% !important;
+            width: 33.33%;
             object-fit: contain;
         }
 
@@ -100,21 +108,21 @@
     </div>
     <h2>CHOISISSEZ VOTRE MODE DE SERVICE</h2>
     <div class="emporterSurPlace">
-        <a id="surPlace" class="buttonChoix" onclick="selectChoice('surPlace')" href="#">
+        <a id="surPlace" class="buttonChoix" onclick="selectChoice('surPlace')" href="menu.php?method=place">
             <img src="img/icons/fourchette-et-couteau.png" alt="Fourchette et couteau">
             SUR PLACE
         </a>
-        <a id="emporter" class="buttonChoix" onclick="selectChoice('emporter')" href="#">
+        <a id="emporter" class="buttonChoix" onclick="selectChoice('emporter')" href="menu.php?method=emporter">
             <img src="img/icons/a-emporter.png" alt="sac à emporter">
             À EMPORTER
         </a>
     </div>
 
-    <button id="continueBtn">CONTINUER</button>
+    <!-- <button id="continueBtn">CONTINUER</button>
     <a href="index.php" id="button-back" class="btn btn-secondary mb-3">RETOUR</a>
-    
+     -->
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let selectedChoice = null;
 
@@ -129,7 +137,9 @@
 
         document.getElementById('continueBtn').addEventListener('click', () => {
             if (selectedChoice) {
-                window.location.href = 'menu.php';
+                sessionStorage.setItem('modeService', selectedChoice);
+                sessionStorage.setItem('getCommande', selectedChoice === 'surPlace' ? 'Sur place' : 'À emporter');
+                // window.location.href = 'menu.php';
             } else {
                 alert('Veuillez sélectionner un mode de service.');
             }

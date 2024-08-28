@@ -1,8 +1,11 @@
 <?php 
+
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
+
 ?>
+
 
 <div class="panier">
     <div class="accordion" id="accordionExample">
@@ -28,9 +31,9 @@ if (!isset($_SESSION['cart'])) {
                 <hr>
                 <div class="panier-buttons">
                     <button class="btn btn-danger" id="cancel-order">Annuler la commande</button>
-                    <form id="order-form" action="checkout.php" method="post">
+                    <form id="order-form" action="confirmation.php" method="post">
                         <input type="hidden" id="cart-data" name="cart-data" value="<?php echo htmlspecialchars(json_encode($_SESSION['cart'])); ?>">
-                        <button type="submit" class="btn btn-success" id="confirm-order">Valider la commande</button>
+                        <button type="submit" class="btn btn-success" name="action" value="checkout">Valider la commande</button>
                     </form>
                 </div>
             </div>
@@ -39,20 +42,14 @@ if (!isset($_SESSION['cart'])) {
 </div>
 
 <script>
-document.getElementById('cancel-order').addEventListener('click', function () {
-    $.post('update_cart.php', { action: 'clear' }, function (response) {
-        updateCartDisplay(response.cart);
-    }, 'json');
-});
+document.getElementById('order-form').addEventListener('submit', function(event) {
+    const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
 
-function updateCartDisplay(cart) {
-    let cartHTML = '';
-    let total = 0;
-    cart.forEach(item => {
-        cartHTML += `<p>${item.name} - ${item.quantity} x ${item.price}€</p>`;
-        total += item.price * item.quantity;
-    });
-    document.getElementById('cart-items').innerHTML = cartHTML || '<p>Votre panier est vide.</p>';
-    document.getElementById('bouton-panier').innerHTML = `Total de votre commande: ${total.toFixed(2)}€`;
-}
+    if (cart.length > 0) {
+        document.getElementById('cart-data').value = JSON.stringify(cart);
+    } else {
+        alert('Votre panier est vide.');
+        event.preventDefault(); 
+    }
+});
 </script>
