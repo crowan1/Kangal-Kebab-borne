@@ -14,13 +14,11 @@ if ($paymentMethod === 'cash' || $paymentMethod === 'card') {
 
         $pdo->beginTransaction();
 
-
         $totalPoints = 0;
         foreach ($_SESSION['cart'] as $item) {
             $totalPoints += $item['points'] * $item['quantity'];
         }
 
-    
         $stmt = $pdo->prepare("
             INSERT INTO orders (user_id, total_price, modeService, getCommande, PaymentMethod) 
             VALUES (:user_id, :total_price, :modeService, 'borne', :payment_method)
@@ -34,27 +32,26 @@ if ($paymentMethod === 'cash' || $paymentMethod === 'card') {
             ':payment_method' => $paymentMethod 
         ]);
 
-   
         $orderId = $pdo->lastInsertId();
 
-       
         foreach ($_SESSION['cart'] as $item) {
             $stmt = $pdo->prepare("
-                INSERT INTO order_items (order_id, product_id, quantity, price) 
-                VALUES (:order_id, :product_id, :quantity, :price)
+                INSERT INTO order_items (order_id, product_id, quantity, price, sauces, crudites, boisson) 
+                VALUES (:order_id, :product_id, :quantity, :price, :sauces, :crudites, :boisson)
             ");
             $stmt->execute([
                 ':order_id' => $orderId,
                 ':product_id' => $item['id'],
                 ':quantity' => $item['quantity'],
-                ':price' => $item['price']
+                ':price' => $item['price'],
+                ':sauces' => $item['sauce'] ?? NULL, // Sauvegarde de la sauce sélectionnée
+                ':crudites' => $item['crudites'] ?? NULL, // Sauvegarde des crudités sélectionnées
+                ':boisson' => $item['boisson'] ?? NULL // Sauvegarde de la boisson sélectionnée
             ]);
         }
 
-        
         $pdo->commit();
 
-         
         unset($_SESSION['cart']);
         unset($_SESSION['method']);
 
@@ -64,9 +61,7 @@ if ($paymentMethod === 'cash' || $paymentMethod === 'card') {
         header("Location: success.php");
         exit();
 
-
     } catch (Exception $e) {
-         
         $pdo->rollBack();
         echo "Erreur lors du traitement de la commande : " . $e->getMessage();
     }

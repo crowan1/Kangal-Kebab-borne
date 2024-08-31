@@ -129,7 +129,6 @@ session_destroy();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>
-        // Redirection vers la page d'accueil après 5 secondes
         setTimeout(function() {
             window.location.href = "index.php";
         }, 5000);

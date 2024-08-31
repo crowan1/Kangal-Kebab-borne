@@ -5,6 +5,9 @@ include("db.php");
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productId = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
+    $crudites = isset($_POST['crudites']) ? implode(', ', $_POST['crudites']) : NULL;
+    $sauce = isset($_POST['sauce']) ? implode(', ', $_POST['sauce']) : NULL;
+    $boisson = isset($_POST['boisson']) ? $_POST['boisson'] : NULL;
 
     if ($productId > 0 && $quantity > 0) {
         if (!isset($_SESSION['cart'])) {
@@ -24,7 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'name' => $product['name'],
                     'price' => $product['price'],
                     'points' => $product['points'],
-                    'quantity' => $quantity
+                    'quantity' => $quantity,
+                    'crudites' => $crudites,
+                    'sauce' => $sauce,
+                    'boisson' => $boisson
                 ];
             }
 
