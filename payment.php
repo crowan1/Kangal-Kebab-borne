@@ -1,6 +1,11 @@
 <?php
 session_start(); 
 
+if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
+    header("location: ./index.php"); 
+    exit; 
+}
+
 if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
     echo "<p>Votre panier est vide. Veuillez retourner au menu et ajouter des articles à votre panier.</p>";
     echo '<a href="menu.php" class="btn btn-primary">Retourner au menu</a>';
@@ -20,15 +25,14 @@ foreach ($_SESSION['cart'] as $item) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paiement</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Roboto', sans-serif;
+            font-weight: 800;
         }
 
         body {
@@ -53,94 +57,55 @@ foreach ($_SESSION['cart'] as $item) {
             object-fit: cover;
         }
 
+        h1 {
+            display: flex;
+            justify-content: center;
+            font-size: 5vh;
+            margin-top: 50px;
+        }
+
         .container-payment {
             flex: 1;
             display: flex;
-            justify-content: center;
+            justify-content: space-around;
             align-items: center;
+            height: 40vh; 
             padding: 20px;
         }
 
-        .payment-box {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .payment-box h1 {
-            margin-bottom: 20px;
-            font-weight: 900;
-            color: #333;
-        }
-
-        .payment-box p {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .payment-options {
+        .buttonChoix {
+            background-color: #FFBB25;
+            height: 200px; 
+            width: 350px; 
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-
-        .payment-options div {
-            margin-bottom: 20px;
-            display: flex;
             justify-content: center;
-            align-items: center;
-        }
-
-        .payment-options button {
-            background-color: #FFB000;
-            color: #fff;
-            font-weight: 700;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            margin-left: 10px;
-            width: 200px;
-            font-size: 18px;
-        }
-
-        .payment-options img {
-            width: 50px;
-            margin-right: 10px;
-        }
-
-        .payment-options button:hover {
-            background-color: #e09e00;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            margin-top: 20px;
             text-decoration: none;
+            color: white;
+            cursor: pointer;
         }
 
-        .btn-secondary:hover {
-            background-color: #5a6268;
+        .buttonChoix img {
+            margin-right: 10px;
+            width: 10vh; 
+            margin-bottom: 15px;
         }
 
-        @media (max-width: 576px) {
-            .banniere {
-                height: 150px;
-            }
+        #button-back {
+            font-family: 'Roboto';
+            font-weight: 800;
+            display: flex;
+            margin: auto;
+            margin-top: 15px;
+            justify-content: center;
+            width: 25vh;
+        }
 
-            .banniere img {
-                width: 33.33%;
-            }
-
-            .payment-box {
-                padding: 30px;
-            }
+        .buttonChoix button {
+            color: white;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -152,26 +117,23 @@ foreach ($_SESSION['cart'] as $item) {
         <img src="img/3.jpg" alt="Image 3">
     </div>
 
-    <div class="container">
-        <div class="payment-box mt-5">
-            <h1>Confirmation de Paiement</h1>
-            <p>Total du panier : <?php echo number_format($total, 2, ',', ' '); ?>€</p>
+    <h1>Confirmation de Paiement</h1>
+    <p style="text-align: center;">Total du panier : <?php echo number_format($total, 2, ',', ' '); ?>€</p>
 
-            <div class="payment-options mt-4">
-                <form action="confi.php" method="post">
-                    <div class="mb-3">
-                        <img src="img/icons/paiement-par-carte-de-credit.png" alt="Carte Bleue" style="width: 50px;">
-                        <button type="submit" name="payment-method" value="card" class="btn btn-primary">Payer par Carte Bleue</button>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <img src="img/icons/en-especes.png" alt="Espèces" style="width: 50px;">
-                        <button type="submit" name="payment-method" value="cash" class="btn btn-secondary">Payer en Espèces</button>
-                    </div>
-                </form>
-                <a href="basket.php" class="btn btn-secondary mt-3">Retour au Panier</a>
-            </div>
-        </div>
+    <div class="container-payment">
+        <form action="confi.php" method="post" class="buttonChoix">
+            <img src="img/icons/carte-bancaire.png" alt="Carte Bleue">
+            <button type="submit" name="payment-method" value="card" class="btn">Payer par Carte Bleue</button>
+        </form>
+        
+        <form action="confi.php" method="post" class="buttonChoix">
+            <img src="img/icons/en-especes.png" alt="Espèces">
+            <button type="submit" name="payment-method" value="cash" class="btn">Payer en Espèces</button>
+        </form>
+    </div>
+
+    <div id="button-back">
+        <a href="menu.php" class="btn btn-secondary">Retour au Panier</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

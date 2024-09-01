@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:8889
--- Généré le : mar. 27 août 2024 à 22:27
+-- Généré le : dim. 01 sep. 2024 à 11:16
 -- Version du serveur : 5.7.39
 -- Version de PHP : 8.2.0
 
@@ -37,15 +37,14 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`) VALUES
-(1, 'Kebabs'),
 (2, 'Boissons'),
-(3, 'Accompagnements'),
+(3, 'Assiette'),
 (4, 'Sandwich'),
 (5, 'Durum'),
 (6, 'Menu sandwich'),
 (7, 'Menu durum'),
 (8, 'Barquette'),
-(9, 'Assiette');
+(9, 'Dessert');
 
 -- --------------------------------------------------------
 
@@ -75,8 +74,25 @@ CREATE TABLE `orders` (
   `status` varchar(50) DEFAULT 'new',
   `delivery_day` datetime DEFAULT CURRENT_TIMESTAMP,
   `modeService` varchar(50) NOT NULL,
-  `getCommande` varchar(50) NOT NULL
+  `getCommande` varchar(50) NOT NULL,
+  `PaymentMethod` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `total_price`, `created_at`, `delivery_time`, `additional_info`, `status`, `delivery_day`, `modeService`, `getCommande`, `PaymentMethod`) VALUES
+(14, 2, '7.70', '2024-08-29 20:53:02', NULL, NULL, 'new', '2024-08-29 22:53:02', 'place', 'borne', 'card'),
+(15, 2, '12.00', '2024-08-29 21:03:07', NULL, NULL, 'new', '2024-08-29 23:03:07', 'emporter', 'borne', 'card'),
+(16, 2, '12.00', '2024-08-29 21:10:05', NULL, NULL, 'new', '2024-08-29 23:10:05', 'emporter', 'borne', 'cash'),
+(17, 2, '6.00', '2024-08-30 15:44:07', NULL, NULL, 'new', '2024-08-30 17:44:07', 'place', 'borne', 'cash'),
+(18, 2, '6.00', '2024-08-31 13:16:02', NULL, NULL, 'new', '2024-08-31 15:16:02', 'emporter', 'borne', 'cash'),
+(19, 2, '6.00', '2024-08-31 13:25:20', NULL, NULL, 'new', '2024-08-31 15:25:20', 'emporter', 'borne', 'card'),
+(20, 2, '18.00', '2024-08-31 17:29:58', NULL, NULL, 'new', '2024-08-31 19:29:58', 'emporter', 'borne', 'card'),
+(21, 2, '6.00', '2024-08-31 17:31:07', NULL, NULL, 'new', '2024-08-31 19:31:07', 'emporter', 'borne', 'card'),
+(22, 2, '6.00', '2024-08-31 17:31:48', NULL, NULL, 'new', '2024-08-31 19:31:48', 'emporter', 'borne', 'card'),
+(23, 2, '6.00', '2024-08-31 23:12:46', NULL, NULL, 'new', '2024-09-01 01:12:46', 'emporter', 'borne', 'card');
 
 -- --------------------------------------------------------
 
@@ -95,6 +111,15 @@ CREATE TABLE `order_items` (
   `supplements` text,
   `boisson` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, `sauces`, `crudites`, `supplements`, `boisson`) VALUES
+(27, 21, 21, 1, '6.00', 'Array', NULL, NULL, NULL),
+(28, 22, 21, 1, '6.00', 'Array', 'salade, tomate, oignons', NULL, 'Coca-Cherry'),
+(29, 23, 3, 1, '6.00', 'blanche, andalouse, ketchup', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -151,17 +176,17 @@ INSERT INTO `products` (`id`, `name`, `price`, `priceBorne`, `category_id`, `sto
 (30, 'Menu Poisson Pané', '6.00', '6.00', 6, 1, 'Un filet de poisson pané, croustillant à l\'extérieur et moelleux à l\'intérieur, accompagné de deux sauces au choix, de garnitures fraîches, de frites, et d\'une boisson de 33cl au choix.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 6),
 (31, 'Menu Feta', '6.00', '6.00', 6, 1, 'Un sandwich végétarien avec des morceaux de feta crémeuse, accompagné de deux sauces au choix, de salade, tomate, et oignon, de frites, et d\'une boisson de 33cl au choix.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 6),
 (32, 'Menu Vegan', '6.00', '6.00', 6, 1, 'Une option 100% végétalienne avec une garniture de légumes grillés ou un steak végétal, accompagnée de deux sauces au choix, de frites, et d\'une boisson de 33cl au choix.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 6),
-(33, 'Assiette Kebab', '8.00', '8.00', 7, 1, 'Une généreuse portion de viande de kebab marinée et grillée, servie avec des crudités fraîches (salade, tomates, oignons). Accompagnée de deux sauces au choix et de bulgur ou de frites, pour un repas complet et savoureux.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(34, 'Assiette Poulet', '8.00', '8.00', 7, 1, 'Des morceaux de poulet marinés et grillés à la perfection, accompagnés de crudités classiques telles que salade, tomates, et oignons. Servie avec deux sauces au choix et de bulgur ou de frites pour un équilibre parfait de saveurs.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(35, 'Assiette Köfte', '8.00', '8.00', 7, 1, 'Des boulettes de viande hachée épicée et grillée, servies avec des crudités fraîches comme salade, tomates, et oignons. Accompagnée de deux sauces au choix et de bulgur ou de frites, offrant un goût authentique et généreux.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(36, 'Assiette Adana', '8.00', '8.00', 7, 1, 'Une brochette de viande hachée épicée grillée et savoureuse, originaire de la région d\'Adana en Turquie, servie avec des crudités (salade, tomates, oignons). Accompagnée de deux sauces au choix et de bulgur ou de frites, pour une explosion de saveurs', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(37, 'Assiette Mixte', '10.00', '10.00', 7, 1, 'Un assortiment de viandes grillées, incluant kebab, poulet et köfte, accompagné de crudités classiques telles que salade, tomates, et oignons. Servie avec deux sauces au choix et de bulgur ou de frites pour une expérience variée et complète.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(38, 'Assiette Escalope Panée', '8.00', '8.00', 7, 1, 'Une escalope de poulet panée, croustillante et tendre, accompagnée de crudités fraîches (salade, tomates, oignons). Servie avec deux sauces au choix et de bulgur ou de frites pour un repas rassasiant et délicieux.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(39, 'Assiette Poisson Pané', '8.00', '8.00', 7, 1, 'Un filet de poisson pané, croustillant à l\'extérieur et moelleux à l\'intérieur, servi avec des crudités comme salade, tomates, et oignons. Accompagnée de deux sauces au choix et de bulgur ou de frites pour une touche légère et savoureuse.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(40, 'Assiette Hamburger', '8.00', '8.00', 7, 1, 'Un steak de bœuf juteux, cuit à la perfection, servi avec des crudités fraîches (salade, tomates, oignons). Accompagné de deux sauces au choix et de bulgur ou de frites pour un classique réconfortant.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(41, 'Assiette Cheeseburger', '8.00', '8.00', 7, 1, 'Comme l\'assiette hamburger, mais avec une tranche de fromage fondant ajoutée sur le steak. Servie avec des crudités (salade, tomates, oignons), deux sauces au choix, et de bulgur ou de frites pour un goût encore plus gourmand.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(42, 'Assiette Sucuk', '8.00', '8.00', 7, 1, 'Une saucisse turque épicée, grillée et savoureuse, servie avec des crudités fraîches (salade, tomates, oignons). Accompagnée de deux sauces au choix et de bulgur ou de frites pour une expérience épicée et complète.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(43, 'Assiette Nuggets', '7.00', '7.00', 7, 1, 'Une portion de 7 nuggets de poulet croustillants, accompagnés de crudités classiques telles que salade, tomates, et oignons. Servie avec deux sauces au choix et de bulgur ou de frites pour un repas qui plaira aux petits et grands.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(33, 'Assiette Kebab', '8.00', '8.00', 3, 1, 'Une généreuse portion de viande de kebab marinée et grillée, servie avec des crudités fraîches (salade, tomates, oignons). Accompagnée de deux sauces au choix et de bulgur ou de frites, pour un repas complet et savoureux.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(34, 'Assiette Poulet', '8.00', '8.00', 3, 1, 'Des morceaux de poulet marinés et grillés à la perfection, accompagnés de crudités classiques telles que salade, tomates, et oignons. Servie avec deux sauces au choix et de bulgur ou de frites pour un équilibre parfait de saveurs.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(35, 'Assiette Köfte', '8.00', '8.00', 3, 1, 'Des boulettes de viande hachée épicée et grillée, servies avec des crudités fraîches comme salade, tomates, et oignons. Accompagnée de deux sauces au choix et de bulgur ou de frites, offrant un goût authentique et généreux.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(36, 'Assiette Adana', '8.00', '8.00', 3, 1, 'Une brochette de viande hachée épicée grillée et savoureuse, originaire de la région d\'Adana en Turquie, servie avec des crudités (salade, tomates, oignons). Accompagnée de deux sauces au choix et de bulgur ou de frites, pour une explosion de saveurs', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(37, 'Assiette Mixte', '10.00', '10.00', 3, 1, 'Un assortiment de viandes grillées, incluant kebab, poulet et köfte, accompagné de crudités classiques telles que salade, tomates, et oignons. Servie avec deux sauces au choix et de bulgur ou de frites pour une expérience variée et complète.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(38, 'Assiette Escalope Panée', '8.00', '8.00', 3, 1, 'Une escalope de poulet panée, croustillante et tendre, accompagnée de crudités fraîches (salade, tomates, oignons). Servie avec deux sauces au choix et de bulgur ou de frites pour un repas rassasiant et délicieux.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(39, 'Assiette Poisson Pané', '8.00', '8.00', 3, 1, 'Un filet de poisson pané, croustillant à l\'extérieur et moelleux à l\'intérieur, servi avec des crudités comme salade, tomates, et oignons. Accompagnée de deux sauces au choix et de bulgur ou de frites pour une touche légère et savoureuse.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(40, 'Assiette Hamburger', '8.00', '8.00', 3, 1, 'Un steak de bœuf juteux, cuit à la perfection, servi avec des crudités fraîches (salade, tomates, oignons). Accompagné de deux sauces au choix et de bulgur ou de frites pour un classique réconfortant.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(41, 'Assiette Cheeseburger', '8.00', '8.00', 3, 1, 'Comme l\'assiette hamburger, mais avec une tranche de fromage fondant ajoutée sur le steak. Servie avec des crudités (salade, tomates, oignons), deux sauces au choix, et de bulgur ou de frites pour un goût encore plus gourmand.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(42, 'Assiette Sucuk', '8.00', '8.00', 3, 1, 'Une saucisse turque épicée, grillée et savoureuse, servie avec des crudités fraîches (salade, tomates, oignons). Accompagnée de deux sauces au choix et de bulgur ou de frites pour une expérience épicée et complète.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(43, 'Assiette Nuggets', '7.00', '7.00', 3, 1, 'Une portion de 7 nuggets de poulet croustillants, accompagnés de crudités classiques telles que salade, tomates, et oignons. Servie avec deux sauces au choix et de bulgur ou de frites pour un repas qui plaira aux petits et grands.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
 (44, 'Grandes Frites', '3.00', '3.00', 8, 1, 'Une grande portion de frites dorées et croustillantes, idéale pour les amateurs de frites ou pour partager. Parfaites en accompagnement de tout repas.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
 (45, 'Petite Frites', '2.00', '2.00', 8, 1, 'Une portion plus modeste de frites croustillantes, parfaite pour une petite faim ou en complément d\'un autre plat.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
 (46, 'Bulgur', '3.00', '3.00', 8, 1, 'Un plat de bulgur savoureux, cuit à la perfection et légèrement épicé, offrant une alternative saine et nutritive aux féculents classiques.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
@@ -173,7 +198,13 @@ INSERT INTO `products` (`id`, `name`, `price`, `priceBorne`, `category_id`, `sto
 (52, 'Tiramisu Oréo', '4.00', '4.00', 9, 1, 'Un dessert italien classique revisité, avec une base crémeuse et onctueuse de mascarpone, surmontée de couches de biscuits imbibés, saveur Oréo, pour une touche chocolatée et croustillante.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
 (53, 'Tiramisu Speculos', '4.00', '4.00', 9, 1, 'Un dessert italien classique revisité, avec une base crémeuse et onctueuse de mascarpone, surmontée de couches de biscuits imbibés, saveur Speculos, pour un goût épicé et caramélisé.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
 (54, 'Baklava', '3.00', '3.00', 9, 1, 'Un dessert traditionnel oriental composé de fines couches de pâte filo, garnies de noix concassées et imbibées de sirop de miel. Chaque bouchée est un mélange parfait de douceur, de croquant et de saveurs riches et parfumées.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
-(55, 'Kit Kat', '2.00', '2.00', 9, 1, 'Une portion de ce célèbre chocolat composé de fines couches de gaufrette croustillante enrobées de chocolat au lait. Parfait pour une petite pause sucrée ou pour combler une envie de chocolat.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7);
+(55, 'Kit Kat', '2.00', '2.00', 9, 1, 'Une portion de ce célèbre chocolat composé de fines couches de gaufrette croustillante enrobées de chocolat au lait. Parfait pour une petite pause sucrée ou pour combler une envie de chocolat.', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', 7),
+(88, 'Coca', '1.50', '1.50', 2, 1, 'Boisson gazeuse classique', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', NULL),
+(89, 'Coca-Cherry', '1.70', '1.70', 2, 1, 'Boisson gazeuse goût cerise', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', NULL),
+(90, 'Oasis', '1.30', '1.30', 2, 1, 'Boisson fruitée sans bulles', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', NULL),
+(91, '7Up', '1.50', '1.50', 2, 1, 'Boisson gazeuse citron-lime', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', NULL),
+(92, '7Up Mojito', '1.70', '1.70', 2, 1, 'Boisson gazeuse saveur mojito sans alcool', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', NULL),
+(93, 'Eau', '1.00', '1.00', 2, 1, 'Bouteille d\'eau', 'https://media.istockphoto.com/id/1075374570/fr/vectoriel/à-venir.jpg?s=612x612&w=0&k=20&c=0jS1orhujDx7Il4v9vYpBkXYLIGPrOMKAnw_fykvl10=', NULL);
 
 -- --------------------------------------------------------
 
@@ -284,19 +315,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT pour la table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT pour la table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT pour la table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT pour la table `users`

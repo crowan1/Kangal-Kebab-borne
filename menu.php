@@ -35,19 +35,70 @@ include('header.php')
     <?php endif; ?>
 </div>
 
+<style>
+
+.category-icon {
+    width: 20px; 
+    height: 20px;
+    margin-right: 10px;
+    vertical-align: middle; 
+}
+
+</style>
+
+<!-- Boutons categories  -->
 <?php
 try {
     include("db.php");
 
     $stmtCategories = $pdo->query("SELECT id, name FROM categories ORDER BY id");
-
+    
     echo '<div class="categorie">';
     echo '<ul class="categorie-list">';
     while ($row = $stmtCategories->fetch(PDO::FETCH_ASSOC)) {
-        echo '<li data-category="' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</li>';
+
+        $categoryIcon = ''; 
+    
+        switch ($row['id']) {
+            case 2:
+                $categoryIcon = 'img/icons/un-soda.png';
+                break;
+            case 3:
+                $categoryIcon = 'img/icons/kofta.png';
+                break;
+            case 4: 
+                $categoryIcon = 'img/icons/doner-kebab.png';
+                break;
+            case 5:
+                $categoryIcon = 'img/icons/kebab.png';
+                break;
+            case 6:
+                $categoryIcon = 'img/icons/burger.png'; 
+                break;
+            case 7:
+                $categoryIcon = 'img/icons/burger.png'; 
+            break;
+            case 8:
+                $categoryIcon = 'img/icons/forfait-alimentaire.png';
+                break;
+
+                case 9 ; 
+                $categoryIcon = 'img/icons/part-de-gateau.png';
+                break; 
+
+                default:
+                $categoryIcon = '#'; 
+                break;
+        }
+    
+        echo '<li data-category="' . $row['id'] . '">';
+        echo '<img src="' . htmlspecialchars($categoryIcon) . '" alt="' . htmlspecialchars($row['name']) . ' Icon" class="category-icon"> ';
+        echo htmlspecialchars($row['name']);
+        echo '</li>';
     }
     echo '</ul>';
     echo '</div>';
+    
 
     $stmtProducts = $pdo->query("SELECT id, name, description, price, image, category_id FROM products");
 
@@ -68,6 +119,8 @@ try {
     echo 'Erreur : ' . $e->getMessage();
 }
 ?>
+
+
 
 <!-- Modal for customizing the menus -->
 <div class="modal fade" id="addToCartMenuModal" tabindex="-1" aria-labelledby="addToCartMenuLabel" aria-hidden="true">
@@ -200,7 +253,6 @@ try {
 </div>
 
 <!-- Modal pour les barquettes -->
-<!-- Modal for customizing barquettes -->
 <div class="modal fade" id="addToCartBarquetteModal" tabindex="-1" aria-labelledby="addToCartBarquetteLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
