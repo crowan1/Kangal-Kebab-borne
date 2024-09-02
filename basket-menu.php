@@ -10,12 +10,11 @@
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                 <div class="accordion-body" id="cart-items">
-                    <?php if (empty($_SESSION['cart'])): ?>
-                        <p>Votre panier est vide.</p>
-                    <?php else: ?>
-                        <?php foreach ($_SESSION['cart'] as $index => $item): ?>
+                <?php if (!empty($_SESSION['cart'])): ?>
+                    <?php foreach ($_SESSION['cart'] as $index => $item): ?>
     <div class="cart-item">
         <p><?php echo htmlspecialchars($item['name']); ?> - <?php echo $item['quantity']; ?> x <?php echo number_format($item['price'], 2, ',', ''); ?> €</p>
+        <img src="img/icons/signe-de-la-croix.png" alt="Supprimer" class="delete-item" data-index="<?php echo $index; ?>">
         <?php if (!empty($item['crudites'])): ?>
             <p><strong>Crudités:</strong> <?php echo htmlspecialchars($item['crudites']); ?></p>
         <?php endif; ?>
@@ -27,7 +26,8 @@
         <?php endif; ?>
     </div>
 <?php endforeach; ?>
-                    <?php endif; ?>
+<?php endif; ?>
+
                 </div>
                 <hr>
                 <div class="panier-buttons">
@@ -96,9 +96,24 @@
     .order-item {
         width: max-content;
     }
+
     .delete-item {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
     width: 20px;
     height: 20px;
-    border: 1px solid red; 
+    cursor: pointer;
+    z-index: 10; 
 }
+
+.cart-item {
+    position: relative;
+    padding: 10px;
+    border: 2px solid #B20F0F;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: rgba(243, 241, 241, 0.5);
+}
+
 </style>

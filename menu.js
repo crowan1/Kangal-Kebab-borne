@@ -144,39 +144,61 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Erreur:', error);
         });
     }
-
-    function resetModal(formId, modalId) {
+    
+ function resetModal(formId, modalId) {
         if (formId) {
             document.getElementById(formId).reset();
         }
         const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
         modal.hide();
     }
-
     function updateCartDisplay() {
         fetch('get_cart.php')
         .then(response => response.json())
         .then(data => {
             let cartHTML = '';
             let total = 0;
-            data.cart.forEach(item => {
-                cartHTML += `<div class="order-item">`;
+            data.cart.forEach((item, index) => {
+                cartHTML += `<div class="cart-item">`;
                 cartHTML += `<p><strong>${item.name} - ${item.quantity} x ${item.price.toFixed(2)}€</strong></p>`;
+                cartHTML += `<img src="img/icons/signe-de-la-croix.png" alt="Supprimer" class="delete-item" data-index="${index}">`;
                 if (item.crudites) {
                     cartHTML += `<p><strong>Crudités:</strong> ${item.crudites}</p>`;
                 }
-                
                 if (item.sauce) {
                     cartHTML += `<p><strong>Sauce:</strong> ${item.sauce}</p>`;
                 }
                 if (item.boisson) {
                     cartHTML += `<p><strong>Boisson:</strong> ${item.boisson}</p>`;
                 }
-                cartHTML += `</div>`; 
+                cartHTML += `</div>`;
                 total += item.price * item.quantity;
             });
             document.getElementById('cart-items').innerHTML = cartHTML || '<p>Votre panier est vide.</p>';
             document.getElementById('bouton-panier').innerHTML = `Total de votre commande: ${total.toFixed(2)}€`;
+
+            // Ajouter l'événement de suppression
+            document.querySelectorAll('.delete-item').forEach(function (deleteButton) {
+                deleteButton.addEventListener('click', function () {
+                    const itemIndex = this.getAttribute('data-index');
+                    fetch('remove_from_cart.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'index=' + itemIndex
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            updateCartDisplay(); // Met à jour l'affichage du panier
+                        } else {
+                            console.error('Erreur: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Erreur:', error));
+                });
+            });
         })
         .catch(error => console.error('Erreur:', error));
     }
