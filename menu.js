@@ -2,10 +2,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const categoryItems = document.querySelectorAll('.categorie-list li');
     const products = document.querySelectorAll('.menus .menu');
     let selectedProduct = null;
+    const additionalSaucePrice = 0.50;
 
+    // Fonction pour retirer la classe active de toutes les catégories
+    function removeActiveCategoryClass() {
+        categoryItems.forEach(item => {
+            item.classList.remove('active-category');
+        });
+    }
+
+    // Filtre les produits par catégorie
     categoryItems.forEach(item => {
         item.addEventListener('click', function () {
             const categoryId = this.getAttribute('data-category');
+            
+            removeActiveCategoryClass();
+            
+            this.classList.add('active-category');
+            
             products.forEach(product => {
                 if (product.getAttribute('data-category') === categoryId) {
                     product.style.display = 'block';
@@ -16,50 +30,100 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Sélection des produits et affichage des modals
     products.forEach(product => {
-        product.addEventListener('click', function () {
+        product.addEventListener('click', function (event) {
+            if (event.target.classList.contains('support-logo')) {
+                event.stopPropagation();
+                return;
+            }
+
             selectedProduct = {
                 id: this.getAttribute('data-product-id'),
                 name: this.getAttribute('data-product-name'),
                 price: parseFloat(this.getAttribute('data-product-price')),
                 category: parseInt(this.getAttribute('data-category'))
             };
-            
-            if ([6, 7].includes(selectedProduct.category)) {
-                const modal = new bootstrap.Modal(document.getElementById('addToCartMenuModal'));
-                modal.show();
-            } else if (selectedProduct.category === 2) {
-                const modal = new bootstrap.Modal(document.getElementById('addToCartBoissonModal'));
-                modal.show();
-            } else if ([9, 4, 5].includes(selectedProduct.category)) { 
-                const modal = new bootstrap.Modal(document.getElementById('addToCartSandwichModal'));
-                modal.show();
-            } else if (selectedProduct.category === 8) { 
-                const modal = new bootstrap.Modal(document.getElementById('addToCartBarquetteModal'));
-                modal.show();
+
+            // modal categorie
+            switch (selectedProduct.category) {
+                case 2: // Boissons
+                    showModal('addToCartBoissonModal');
+                    break;
+                case 3: // Kofta
+                case 4: // Doner
+                case 5: // Kebab
+                    showModal('addToCartSandwichModal', '#customizeSandwichForm');
+                    break;
+                case 6: // Menu
+                case 7: // Menu
+                    showModal('addToCartMenuModal', '#customizeMenuForm');
+                    break;
+                case 8: // Barquette
+                    showModal('addToCartBarquetteModal', '#customizeBarquetteForm');
+                    break;
+                case 9: // Dessert
+                    showModal('addToCartDessertModal');
+                    break;
+                default:
+                    alert('Catégorie non prise en charge.');
             }
         });
     });
 
-    document.getElementById('confirmAddMenuToCart').addEventListener('click', function () {
-        submitForm('customizeMenuForm', selectedProduct, 'addToCartMenuModal');
-    });
+    function showModal(modalId, formSelector) {
+        resetForm(formSelector);
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        modal.show();
 
-    document.getElementById('confirmAddBoissonToCart').addEventListener('click', function () {
-        submitSimpleForm(selectedProduct, 'addToCartBoissonModal');
-    });
+        if (formSelector) {
+            handleSauceSelection(formSelector);
+        }
+    }
 
-    document.getElementById('confirmAddSandwichToCart').addEventListener('click', function () {
-        submitForm('customizeSandwichForm', selectedProduct, 'addToCartSandwichModal');
-    });
+    function resetForm(formSelector) {
+        if (formSelector) {
+            const form = document.querySelector(formSelector);
+            if (form) {
+                form.reset(); // Réinitialise le formulaire
+            }
+            updatePrice(selectedProduct.price, 0, formSelector); 
+        }
+    }
 
-    document.getElementById('confirmAddBarquetteToCart').addEventListener('click', function () {
-        submitForm('customizeBarquetteForm', selectedProduct, 'addToCartBarquetteModal');
-    });
+    function handleSauceSelection(formSelector) {
+        const sauceInputs = document.querySelectorAll(`${formSelector} input[name="sauce[]"]`);
+        sauceInputs.forEach(sauce => {
+            sauce.addEventListener('change', function () {
+                const selectedSauces = document.querySelectorAll(`${formSelector} input[name="sauce[]"]:checked`);
+                const extraCost = selectedSauces.length > 2 ? (selectedSauces.length - 2) * additionalSaucePrice : 0;
+                updatePrice(selectedProduct.price + extraCost, selectedSauces.length, formSelector);
+            });
+        });
+    }
+    
+    
+    function updatePrice(newPrice, sauceCount, formSelector) {
+        document.querySelector('.modal-title').innerText = `Personnalisez votre menu - Total: ${newPrice.toFixed(2)}€`;
+
+        const sauceMessage = document.querySelector(`${formSelector} #sauce-extra-message`);
+        if (sauceCount > 2) {
+            sauceMessage.style.display = 'flex';
+        } else {
+            sauceMessage.style.display = 'none';
+        }
+    }
 
     function submitForm(formId, product, modalId) {
-        const form = document.getElementById(formId);
-        const formData = new FormData(form);
+        let formData;
+        
+        if (formId === null) {
+            formData = new FormData();
+        } else {
+            const form = document.getElementById(formId);
+            formData = new FormData(form);
+        }
+        
         formData.append('product_id', product.id);
         formData.append('quantity', 1);
 
@@ -70,35 +134,10 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                alert(data.message);
                 updateCartDisplay();
                 resetModal(formId, modalId);
             } else {
-                alert('Erreur: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-        });
-    }
-
-    function submitSimpleForm(product, modalId) {
-        const formData = new FormData();
-        formData.append('product_id', product.id);
-        formData.append('quantity', 1);
-
-        fetch('add_panier.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert(data.message);
-                updateCartDisplay();
-                resetModal(null, modalId);
-            } else {
-                alert('Erreur: ' + data.message);
+                console.error('Erreur: ' + data.message);
             }
         })
         .catch(error => {
@@ -121,7 +160,19 @@ document.addEventListener('DOMContentLoaded', function () {
             let cartHTML = '';
             let total = 0;
             data.cart.forEach(item => {
-                cartHTML += `<p>${item.name} - ${item.quantity} x ${item.price}€</p>`;
+                cartHTML += `<div class="order-item">`;
+                cartHTML += `<p><strong>${item.name} - ${item.quantity} x ${item.price.toFixed(2)}€</strong></p>`;
+                if (item.crudites) {
+                    cartHTML += `<p><strong>Crudités:</strong> ${item.crudites}</p>`;
+                }
+                
+                if (item.sauce) {
+                    cartHTML += `<p><strong>Sauce:</strong> ${item.sauce}</p>`;
+                }
+                if (item.boisson) {
+                    cartHTML += `<p><strong>Boisson:</strong> ${item.boisson}</p>`;
+                }
+                cartHTML += `</div>`; 
                 total += item.price * item.quantity;
             });
             document.getElementById('cart-items').innerHTML = cartHTML || '<p>Votre panier est vide.</p>';
@@ -129,6 +180,42 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => console.error('Erreur:', error));
     }
+    
+    document.getElementById('confirmAddMenuToCart').addEventListener('click', function () {
+        submitForm('customizeMenuForm', selectedProduct, 'addToCartMenuModal');
+    });
+
+    document.getElementById('confirmAddSandwichToCart').addEventListener('click', function () {
+        submitForm('customizeSandwichForm', selectedProduct, 'addToCartSandwichModal');
+    });
+
+    document.getElementById('confirmAddBoissonToCart').addEventListener('click', function () {
+        submitForm(null, selectedProduct, 'addToCartBoissonModal');
+    });
+
+    document.getElementById('confirmAddBarquetteToCart').addEventListener('click', function () {
+        submitForm('customizeBarquetteForm', selectedProduct, 'addToCartBarquetteModal');
+    });
+
+    document.getElementById('confirmAddDessertToCart').addEventListener('click', function () {
+        submitForm(null, selectedProduct, 'addToCartDessertModal');
+    });
 
     updateCartDisplay();
+
+    const supportLogos = document.querySelectorAll('.support-logo');
+    supportLogos.forEach(logo => {
+        logo.addEventListener('click', function (event) {
+            event.stopPropagation();
+            const description = this.getAttribute('data-description');
+            showSupportModal(description);
+        });
+    });
+
+    function showSupportModal(description) {
+        const modal = new bootstrap.Modal(document.getElementById('supportModal'));
+        document.querySelector('#supportModal .modal-title').innerText = "Description du produit";
+        document.querySelector('#supportModal .modal-body').innerText = description;
+        modal.show();
+    }
 });

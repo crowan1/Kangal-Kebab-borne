@@ -1,14 +1,3 @@
-<?php
-session_start();
-
-if(isset($_SESSION["user_id"]) && !empty($_SESSION["user_id"])){
-    header("location: ./choice.php"); 
-    exit; 
-}
-
-
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -64,13 +53,46 @@ if(isset($_SESSION["user_id"]) && !empty($_SESSION["user_id"])){
             justify-content: center;
             text-decoration: none;
             color: black;
-            cursor: pointer;
+            position: relative;
         }
 
         .buttonChoix img {
             margin-right: 10px;
             width: 10vh;
             margin-bottom: 15px;
+        }
+
+        .buttonChoix.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .buttonChoix.disabled img {
+            filter: grayscale(100%);
+        }
+
+        .buttonChoix.disabled::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 128, 128, 0.5);  
+    z-index: 1;
+    pointer-events: none;
+}
+
+        .buttonChoix.disabled .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 2vh;
+            font-weight: 900;
+            z-index: 2;
+            text-align: center;
         }
 
         .selected {
@@ -86,6 +108,12 @@ if(isset($_SESSION["user_id"]) && !empty($_SESSION["user_id"])){
             padding: 1vh 5vh;
             border: none;
             border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #connecter.disabled {
+            pointer-events: none;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -98,7 +126,8 @@ if(isset($_SESSION["user_id"]) && !empty($_SESSION["user_id"])){
     </div>
     <h2>BIENVENUE</h2>
     <div class="choice-container">
-        <a id="connecter" class="buttonChoix" onclick="selectChoice('connecter')" href="#">
+        <a id="connecter" class="buttonChoix disabled" href="#">
+            <div class="overlay-text">Bientôt disponible !</div>
             <img src="img/icons/se-connecter.png" alt="icon d'un compte">
             SE CONNECTER
         </a>
@@ -120,14 +149,13 @@ if(isset($_SESSION["user_id"]) && !empty($_SESSION["user_id"])){
             });
 
             selectedChoice = choiceId;
-            document.getElementById(choiceId).classList.add('selected');
+            if (choiceId !== 'connecter') {
+                document.getElementById(choiceId).classList.add('selected');
+            }
         }
 
         document.getElementById('continueBtn').addEventListener('click', () => {
-            if (selectedChoice === 'connecter') {
-                sessionStorage.setItem('user_type', 'connecter');
-                window.location.href = 'login.php';
-            } else if (selectedChoice === 'inviter') {
+            if (selectedChoice === 'inviter') {
                 sessionStorage.setItem('user_type', 'inviter');
                 window.location.href = 'connect_as_guest.php';
             } else {

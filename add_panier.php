@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("db.php");  
+include("db.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productId = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $crudites = isset($_POST['crudites']) ? implode(', ', $_POST['crudites']) : NULL;
     $sauce = isset($_POST['sauce']) ? implode(', ', $_POST['sauce']) : NULL;
     $boisson = isset($_POST['boisson']) ? $_POST['boisson'] : NULL;
+    $additionalSaucePrice = 0.50;
 
     if ($productId > 0 && $quantity > 0) {
         if (!isset($_SESSION['cart'])) {
@@ -18,14 +19,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':id' => $productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($product) { 
-            if (isset($_SESSION['cart'][$productId])) {
-                $_SESSION['cart'][$productId]['quantity'] += $quantity;
-            } else {
-                $_SESSION['cart'][$productId] = [
+        if ($product) {
+            $extraCost = 0;
+            if (!empty($sauce)) {
+                $sauces = explode(', ', $sauce);
+                if (count($sauces) > 2) {
+                    $extraCost = (count($sauces) - 2) * $additionalSaucePrice;
+                }
+            }
+
+            $finalPrice = $product['price'] + $extraCost;
+
+            $isSameProduct = false;
+            foreach ($_SESSION['cart'] as &$item) {
+                if (
+                    $item['id'] == $productId &&
+                    $item['crudites'] === $crudites &&
+                    $item['sauce'] === $sauce &&
+                    $item['boisson'] === $boisson
+                ) {
+                    $item['quantity'] += $quantity;
+                    $isSameProduct = true;
+                    break;
+                }
+            }
+
+            if (!$isSameProduct) {
+                $_SESSION['cart'][] = [
                     'id' => $product['id'],
                     'name' => $product['name'],
-                    'price' => $product['price'],
+                    'price' => $finalPrice,
                     'points' => $product['points'],
                     'quantity' => $quantity,
                     'crudites' => $crudites,
@@ -34,13 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
             }
 
-            echo json_encode(['status' => 'success', 'message' => 'Produit ajouté au panier']);
+            echo json_encode(['status' => 'success', 'cart' => $_SESSION['cart']]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Produit non trouvé']);
         }
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Données invalides']);
+        echo json_encode(['status' => 'error', 'message' => 'ID de produit ou quantité invalide']);
     }
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Requête invalide']);
+    echo json_encode(['status' => 'error', 'message' => 'Méthode de requête invalide']);
 }

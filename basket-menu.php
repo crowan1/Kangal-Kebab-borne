@@ -13,18 +13,20 @@
                     <?php if (empty($_SESSION['cart'])): ?>
                         <p>Votre panier est vide.</p>
                     <?php else: ?>
-                        <?php foreach ($_SESSION['cart'] as $item): ?>
-                            <p><?php echo htmlspecialchars($item['name']); ?> - <?php echo $item['quantity']; ?> x <?php echo htmlspecialchars($item['price']); ?>€</p>
-                            <?php if (!empty($item['crudites'])): ?>
-                                <p><strong>Crudités:</strong> <?php echo htmlspecialchars($item['crudites']); ?></p>
-                            <?php endif; ?>
-                            <?php if (!empty($item['sauce'])): ?>
-                                <p><strong>Sauce:</strong> <?php echo htmlspecialchars($item['sauce']); ?></p>
-                            <?php endif; ?>
-                            <?php if (!empty($item['boisson'])): ?>
-                                <p><strong>Boisson:</strong> <?php echo htmlspecialchars($item['boisson']); ?></p>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
+                        <?php foreach ($_SESSION['cart'] as $index => $item): ?>
+    <div class="cart-item">
+        <p><?php echo htmlspecialchars($item['name']); ?> - <?php echo $item['quantity']; ?> x <?php echo number_format($item['price'], 2, ',', ''); ?> €</p>
+        <?php if (!empty($item['crudites'])): ?>
+            <p><strong>Crudités:</strong> <?php echo htmlspecialchars($item['crudites']); ?></p>
+        <?php endif; ?>
+        <?php if (!empty($item['sauce'])): ?>
+            <p><strong>Sauce:</strong> <?php echo htmlspecialchars($item['sauce']); ?></p>
+        <?php endif; ?>
+        <?php if (!empty($item['boisson'])): ?>
+            <p><strong>Boisson:</strong> <?php echo htmlspecialchars($item['boisson']); ?></p>
+        <?php endif; ?>
+    </div>
+<?php endforeach; ?>
                     <?php endif; ?>
                 </div>
                 <hr>
@@ -78,3 +80,25 @@
         document.querySelector('.pop-up-delete-order').style.display = 'none';
     });
 </script>
+
+<style>
+    #close-popup {
+        color: white;
+    }
+
+    #cart-items {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .order-item {
+        width: max-content;
+    }
+    .delete-item {
+    width: 20px;
+    height: 20px;
+    border: 1px solid red; 
+}
+</style>

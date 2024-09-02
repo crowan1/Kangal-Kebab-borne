@@ -50,3 +50,7 @@
 .popup-buttons .btn {
     width: 45%;
 }
+
+#close-popup {
+    color: white;
+}

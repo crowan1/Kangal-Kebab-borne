@@ -85,12 +85,36 @@ foreach ($_SESSION['cart'] as $item) {
             text-decoration: none;
             color: white;
             cursor: pointer;
+            border: none; 
         }
 
         .buttonChoix img {
             margin-right: 10px;
             width: 10vh; 
             margin-bottom: 15px;
+        }
+
+        .buttonChoix.disabled {
+            cursor: not-allowed;
+            background-color: rgba(128, 128, 128, 0.5); /* Fond gris avec 50% de transparence */
+            opacity: 0.6;
+            position: relative;
+        }
+
+        .buttonChoix.disabled img {
+            filter: grayscale(100%);
+        }
+
+        .buttonChoix.disabled .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 2vh;
+            font-weight: 900;
+            z-index: 2;
+            text-align: center;
         }
 
         #button-back {
@@ -101,11 +125,6 @@ foreach ($_SESSION['cart'] as $item) {
             margin-top: 15px;
             justify-content: center;
             width: 25vh;
-        }
-
-        .buttonChoix button {
-            color: white;
-            font-weight: 600;
         }
     </style>
 </head>
@@ -121,14 +140,17 @@ foreach ($_SESSION['cart'] as $item) {
     <p style="text-align: center;">Total du panier : <?php echo number_format($total, 2, ',', ' '); ?>€</p>
 
     <div class="container-payment">
-        <form action="confi.php" method="post" class="buttonChoix">
+        <div class="buttonChoix disabled">
+            <div class="overlay-text">Bientôt disponible !</div>
             <img src="img/icons/carte-bancaire.png" alt="Carte Bleue">
-            <button type="submit" name="payment-method" value="card" class="btn">Payer par Carte Bleue</button>
-        </form>
+            <span>Payer par Carte Bleue</span>
+        </div>
         
-        <form action="confi.php" method="post" class="buttonChoix">
-            <img src="img/icons/en-especes.png" alt="Espèces">
-            <button type="submit" name="payment-method" value="cash" class="btn">Payer en Espèces</button>
+        <form action="confi.php" method="post">
+            <button type="submit" name="payment-method" value="cash" class="buttonChoix">
+                <img src="img/icons/en-especes.png" alt="Espèces">
+                <span>Payer en Borne</span>
+            </button>
         </form>
     </div>
 

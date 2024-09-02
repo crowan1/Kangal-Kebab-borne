@@ -45,39 +45,8 @@
     cursor: pointer;
 }
 
-.menus {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    height: 58vh;
-    position: fixed;
-    overflow-y: scroll;
-}
 
-.menu {
-    border: 1px solid rgb(232, 232, 232);
-    background-color: rgba(243, 241, 241, 0.196);
-    border-radius: 14px;
-    width: 320px;
-    height: 15vh;
-    margin: 0.5rem;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
-    text-align: center;
-    font-family: "Roboto";
-}
 
-.menu img {
-    width: 30%;
-    object-fit: contain;
-    max-height: 50%;
-}
-
-.menu span {
-    background-color: #FFBB25;
-    padding: 5px 40px;
-    border-radius: 25px;
-    color: white;
-}
 
 .panier {
     position: fixed;
@@ -110,7 +79,7 @@
 
 .modal-content {
     position: relative;
-    top: 200px;
+    top: 100px;
     background-color: white;
 }
 

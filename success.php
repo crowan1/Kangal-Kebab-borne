@@ -1,15 +1,18 @@
 <?php
 session_start();
 
- 
+if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
+    header("location: ./index.php"); 
+    exit; 
+}
+
+
 $order_id = $_SESSION['order_id'] ?? 'N/A';
 
- 
 if ($order_id === 'N/A') {
     $order_id = 'un numéro de commande généré';
 }
 
- 
 session_unset();
 session_destroy();
 ?>
