@@ -6,6 +6,22 @@ if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
     exit; 
 }
 
+// Vérifier s'il y a une commande à traiter
+if (!isset($_SESSION['order_id'])) {
+    header("Location: menu.php");
+    exit();
+}
+
+// Appliquer la déduction des points si le produit gratuit a été ajouté
+if (isset($_SESSION['temp_points_deduction']) && $_SESSION['temp_points_deduction'] === 150) {
+    // Déduire les points de l'utilisateur dans la base de données
+    $stmt = $pdo->prepare("UPDATE user_points SET points = points - 150 WHERE user_id = :user_id");
+    $stmt->execute([':user_id' => $_SESSION['user_id']]);
+
+    // Supprimer la déduction temporaire dans la session
+    unset($_SESSION['temp_points_deduction']);
+}
+
 
 $order_id = $_SESSION['order_id'] ?? 'N/A';
 
@@ -42,17 +58,15 @@ session_destroy();
 
         .banniere {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-            height: 250px;
-            background-color: #B20F0F;
+    justify-content: space-around;
+    width: 100%;
+    height: 250px;
+    background-color: #B20F0F;
         }
 
         .banniere img {
-            width: 30%;
-            height: 100%;
-            object-fit: cover;
+            width: 33.33% !important;
+            object-fit: contain;
         }
 
         .container-success {
@@ -80,7 +94,7 @@ session_destroy();
         }
 
         .success-box p {
-            font-size: 18px;
+            font-size: 25px;
             margin-bottom: 30px;
         }
 
@@ -124,7 +138,7 @@ session_destroy();
     <div class="container-success">
         <div class="success-box">
             <h2>Merci pour votre commande !</h2>
-            <p>Votre commande numéro <strong><?php echo htmlspecialchars($order_id); ?></strong> a été enregistrée avec succès.</p>
+            <p>Votre commande numéro <strong><?php echo htmlspecialchars($order_id);  ?></strong>a été enregistrée avec succès.</p>
             <p>Vous allez être redirigé vers la page d'accueil dans quelques secondes.</p>
             <a href="index.php" class="btn-home">Retour à l'accueil</a>
         </div>
@@ -134,7 +148,7 @@ session_destroy();
     <script>
         setTimeout(function() {
             window.location.href = "index.php";
-        }, 5000);
+        }, 10000);
     </script>
 </body>
 </html>

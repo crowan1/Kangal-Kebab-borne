@@ -8,7 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $crudites = isset($_POST['crudites']) ? implode(', ', $_POST['crudites']) : NULL;
     $sauce = isset($_POST['sauce']) ? implode(', ', $_POST['sauce']) : NULL;
     $boisson = isset($_POST['boisson']) ? $_POST['boisson'] : NULL;
+    $supplements = isset($_POST['supplements']) ? $_POST['supplements'] : [];
     $additionalSaucePrice = 0.50;
+    $supplementCheesePrice = 1;
+    $supplementViandePrice = 1;
 
     if ($productId > 0 && $quantity > 0) {
         if (!isset($_SESSION['cart'])) {
@@ -21,12 +24,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($product) {
             $extraCost = 0;
+
+            // Gestion des sauces supplémentaires
             if (!empty($sauce)) {
                 $sauces = explode(', ', $sauce);
                 if (count($sauces) > 2) {
                     $extraCost = (count($sauces) - 2) * $additionalSaucePrice;
                 }
             }
+
+            // Ajout des suppléments cheese et viande
+            if (in_array('cheese', $supplements)) {
+                $extraCost += $supplementCheesePrice;
+            }
+            if (in_array('viande', $supplements)) {
+                $extraCost += $supplementViandePrice;
+            }
+            if (in_array('feta', $supplements)) {  
+                $extraCost += $supplementFetaPrice;
+            }
+            
 
             $finalPrice = $product['price'] + $extraCost;
 
@@ -36,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $item['id'] == $productId &&
                     $item['crudites'] === $crudites &&
                     $item['sauce'] === $sauce &&
-                    $item['boisson'] === $boisson
+                    $item['boisson'] === $boisson &&
+                    $item['supplements'] === implode(', ', $supplements)
                 ) {
                     $item['quantity'] += $quantity;
                     $isSameProduct = true;
@@ -53,7 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'quantity' => $quantity,
                     'crudites' => $crudites,
                     'sauce' => $sauce,
-                    'boisson' => $boisson
+                    'boisson' => $boisson,
+                    'supplements' => implode(', ', $supplements) // Enregistrer les suppléments
                 ];
             }
 

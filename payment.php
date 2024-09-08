@@ -1,9 +1,9 @@
 <?php
-session_start(); 
+session_start();
 
-if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
-    header("location: ./index.php"); 
-    exit; 
+if (!isset($_SESSION["user_id"]) || empty($_SESSION["user_id"])) {
+    header("Location: ./index.php");
+    exit();
 }
 
 if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
@@ -16,16 +16,60 @@ $total = 0;
 foreach ($_SESSION['cart'] as $item) {
     $total += $item['price'] * $item['quantity'];
 }
+
+
+if ($total == 0) {
+    header("Location: confi.php");
+    exit();
+}
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap">
+<body>
+
+<div class="banniere">
+    <img src="img/1.jpg" alt="Image 1">
+    <img src="img/2.jpg" alt="Image 2">
+    <img src="img/3.jpg" alt="Image 3">
+</div>
+
+<h1>Confirmation de Paiement</h1>
+<p style="text-align: center;" id="total-basket">Total du panier : <?php echo number_format($total, 2, ',', ' '); ?>€</p>
+
+<div class="container-payment">
+    <div class="buttonChoix disabled">
+        <div class="overlay-text">Bientôt disponible !</div>
+        <img src="img/icons/carte-bancaire.png" alt="Carte Bleue">
+        <span>Payer par Carte Bleue</span>
+    </div>
+
+    <form action="chevalet.php" method="post">
+
+        <?php if ($_SESSION['method'] == 'place'): ?>
+            <input type="hidden" name="payment-method" value="cash">
+            <button type="submit" class="buttonChoix">
+                <img src="img/icons/en-especes.png" alt="Espèces">
+                <span>Payer en Borne (Cash)</span>
+            </button>
+        <?php else: ?>
+
+            <input type="hidden" name="payment-method" value="cash">
+            <button type="submit" formaction="confi.php" class="buttonChoix">
+                <img src="img/icons/en-especes.png" alt="Espèces">
+                <span>Payer en Borne (Cash)</span>
+            </button>
+        <?php endif; ?>
+    </form>
+</div>
+
+<div id="button-back">
+    <a href="menu.php" class="btn-back">Retour au Panier</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
     <style>
         * {
             box-sizing: border-box;
@@ -42,19 +86,21 @@ foreach ($_SESSION['cart'] as $item) {
             background-color: #f8f9fa;
         }
 
+        #total-basket {
+            font-size: 30px;
+        }
+
         .banniere {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-            height: 250px;
-            background-color: #B20F0F;
+    justify-content: space-around;
+    width: 100%;
+    height: 250px;
+    background-color: #B20F0F;
         }
 
         .banniere img {
-            width: 30%;
-            height: 100%;
-            object-fit: cover;
+            width: 33.33% !important;
+            object-fit: contain;
         }
 
         h1 {
@@ -65,7 +111,6 @@ foreach ($_SESSION['cart'] as $item) {
         }
 
         .container-payment {
-            flex: 1;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -75,7 +120,7 @@ foreach ($_SESSION['cart'] as $item) {
 
         .buttonChoix {
             background-color: #FFBB25;
-            height: 200px; 
+            height: 250px; 
             width: 350px; 
             border-radius: 6px;
             display: flex;
@@ -96,7 +141,7 @@ foreach ($_SESSION['cart'] as $item) {
 
         .buttonChoix.disabled {
             cursor: not-allowed;
-            background-color: rgba(128, 128, 128, 0.5); /* Fond gris avec 50% de transparence */
+            background-color: rgba(128, 128, 128, 0.5);
             opacity: 0.6;
             position: relative;
         }
@@ -126,38 +171,13 @@ foreach ($_SESSION['cart'] as $item) {
             justify-content: center;
             width: 25vh;
         }
+
+        #button-back a {
+            text-decoration: none;
+            font-size: 30px;
+            color: white;
+            background-color: #FFBB25;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
     </style>
-</head>
-<body>
-
-    <div class="banniere">
-        <img src="img/1.jpg" alt="Image 1">
-        <img src="img/2.jpg" alt="Image 2">
-        <img src="img/3.jpg" alt="Image 3">
-    </div>
-
-    <h1>Confirmation de Paiement</h1>
-    <p style="text-align: center;">Total du panier : <?php echo number_format($total, 2, ',', ' '); ?>€</p>
-
-    <div class="container-payment">
-        <div class="buttonChoix disabled">
-            <div class="overlay-text">Bientôt disponible !</div>
-            <img src="img/icons/carte-bancaire.png" alt="Carte Bleue">
-            <span>Payer par Carte Bleue</span>
-        </div>
-        
-        <form action="confi.php" method="post">
-            <button type="submit" name="payment-method" value="cash" class="buttonChoix">
-                <img src="img/icons/en-especes.png" alt="Espèces">
-                <span>Payer en Borne</span>
-            </button>
-        </form>
-    </div>
-
-    <div id="button-back">
-        <a href="menu.php" class="btn btn-secondary">Retour au Panier</a>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

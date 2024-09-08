@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             products.forEach(product => {
                 if (product.getAttribute('data-category') === categoryId) {
-                    product.style.display = 'block';
+                    product.style.display = 'flex';
                 } else {
                     product.style.display = 'none';
                 }
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 category: parseInt(this.getAttribute('data-category'))
             };
 
-            // modal categorie
+            // Modal catégorie
             switch (selectedProduct.category) {
                 case 2: // Boissons
                     showModal('addToCartBoissonModal');
@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (formSelector) {
             handleSauceSelection(formSelector);
+            handleSupplementSelection(formSelector); // Gérer les suppléments
         }
     }
 
@@ -101,8 +102,24 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-    
-    
+
+    function handleSupplementSelection(formSelector) {
+        const cheeseInput = document.querySelector(`${formSelector} input[name="supplements[]"][value="cheese"]`);
+        const viandeInput = document.querySelector(`${formSelector} input[name="supplements[]"][value="viande"]`);
+
+        function updateSupplementPrice() {
+            let extraCost = 0;
+            if (cheeseInput.checked) extraCost += 1; // 1€ pour le supplément cheese
+            if (viandeInput.checked) extraCost += 1; // 1€ pour le supplément viande
+
+            const totalPrice = selectedProduct.price + extraCost; // Prix total avec les suppléments
+            document.querySelector('.modal-title').innerText = `Personnalisez votre menu - Total: ${totalPrice.toFixed(2)}€`;
+        }
+
+        cheeseInput.addEventListener('change', updateSupplementPrice);
+        viandeInput.addEventListener('change', updateSupplementPrice);
+    }
+
     function updatePrice(newPrice, sauceCount, formSelector) {
         document.querySelector('.modal-title').innerText = `Personnalisez votre menu - Total: ${newPrice.toFixed(2)}€`;
 
@@ -126,18 +143,24 @@ document.addEventListener('DOMContentLoaded', function () {
         
         formData.append('product_id', product.id);
         formData.append('quantity', 1);
-
+    
         fetch('add_panier.php', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur réseau');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.status === 'success') {
-                updateCartDisplay();
-                resetModal(formId, modalId);
+                updateCartDisplay();  // Rafraîchir l'affichage du panier
+                resetModal(formId, modalId); // Réinitialise le modal
             } else {
                 console.error('Erreur: ' + data.message);
+                alert('Erreur: ' + data.message);
             }
         })
         .catch(error => {
@@ -145,63 +168,65 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
- function resetModal(formId, modalId) {
+    function resetModal(formId, modalId) {
         if (formId) {
             document.getElementById(formId).reset();
         }
         const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
         modal.hide();
     }
-    function updateCartDisplay() {
-        fetch('get_cart.php')
-        .then(response => response.json())
-        .then(data => {
-            let cartHTML = '';
-            let total = 0;
-            data.cart.forEach((item, index) => {
-                cartHTML += `<div class="cart-item">`;
-                cartHTML += `<p><strong>${item.name} - ${item.quantity} x ${item.price.toFixed(2)}€</strong></p>`;
-                cartHTML += `<img src="img/icons/signe-de-la-croix.png" alt="Supprimer" class="delete-item" data-index="${index}">`;
-                if (item.crudites) {
-                    cartHTML += `<p><strong>Crudités:</strong> ${item.crudites}</p>`;
-                }
-                if (item.sauce) {
-                    cartHTML += `<p><strong>Sauce:</strong> ${item.sauce}</p>`;
-                }
-                if (item.boisson) {
-                    cartHTML += `<p><strong>Boisson:</strong> ${item.boisson}</p>`;
-                }
-                cartHTML += `</div>`;
-                total += item.price * item.quantity;
-            });
-            document.getElementById('cart-items').innerHTML = cartHTML || '<p>Votre panier est vide.</p>';
-            document.getElementById('bouton-panier').innerHTML = `Total de votre commande: ${total.toFixed(2)}€`;
+   // Ajoutez cet événement après l'affichage du panier
+function updateCartDisplay() {
+    fetch('get_cart.php')
+    .then(response => response.json())
+    .then(data => {
+        let cartHTML = '';
+        let total = 0;
+        data.cart.forEach((item, index) => {
+            cartHTML += `<div class="cart-item">`;
+            cartHTML += `<p><strong>${item.name} - ${item.quantity} x ${item.price.toFixed(2)}€</strong></p>`;
+            if (item.crudites) {
+                cartHTML += `<p><strong>Crudités:</strong> ${item.crudites}</p>`;
+            }
+            if (item.sauce) {
+                cartHTML += `<p><strong>Sauce:</strong> ${item.sauce}</p>`;
+            }
+            if (item.boisson) {
+                cartHTML += `<p><strong>Boisson:</strong> ${item.boisson}</p>`;
+            }
+            cartHTML += `<img src="img/icons/croix-rouge.png" class="delete-item" data-index="${index}" alt="Supprimer" style="cursor: pointer; width: 20px; height: 20px;">`;
+            cartHTML += `</div>`;
+            total += item.price * item.quantity;
+        });
+        document.getElementById('cart-items').innerHTML = cartHTML || '<p>Votre panier est vide.</p>';
+        document.getElementById('bouton-panier').innerHTML = `Total de votre commande: ${total.toFixed(2)}€`;
 
-            // Ajouter l'événement de suppression
-            document.querySelectorAll('.delete-item').forEach(function (deleteButton) {
-                deleteButton.addEventListener('click', function () {
-                    const itemIndex = this.getAttribute('data-index');
-                    fetch('remove_from_cart.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: 'index=' + itemIndex
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            updateCartDisplay(); // Met à jour l'affichage du panier
-                        } else {
-                            console.error('Erreur: ' + data.message);
-                        }
-                    })
-                    .catch(error => console.error('Erreur:', error));
-                });
+        // Ajouter l'événement de suppression pour chaque croix rouge
+        document.querySelectorAll('.delete-item').forEach(function (deleteButton) {
+            deleteButton.addEventListener('click', function () {
+                const itemIndex = this.getAttribute('data-index');
+                fetch('remove_from_cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'index=' + itemIndex
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateCartDisplay(); // Mettre à jour le panier après suppression
+                    } else {
+                        console.error('Erreur: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Erreur:', error));
             });
-        })
-        .catch(error => console.error('Erreur:', error));
-    }
+        });
+    })
+    .catch(error => console.error('Erreur:', error));
+}
+
     
     document.getElementById('confirmAddMenuToCart').addEventListener('click', function () {
         submitForm('customizeMenuForm', selectedProduct, 'addToCartMenuModal');

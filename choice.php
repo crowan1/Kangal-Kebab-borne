@@ -8,14 +8,6 @@ if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
 
 
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choix du Service</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap">
     <style>
         * {
             box-sizing: border-box;
@@ -27,10 +19,11 @@ if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
 
         h2 {
             display: flex;
-            justify-content: center;
-            font-size: 5vh;
-            margin-top: 100px;
-        }
+    justify-content: center;
+    font-size: 4vh;
+    text-align: center;
+    margin: 100px 100px 0 100px;
+}
 
         .banniere {
             display: flex;
@@ -49,12 +42,12 @@ if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
             display: flex;
             justify-content: space-around;
             align-items: center;
-            height: 40vh; 
+            height: 35vh; 
         }
 
         .buttonChoix {
             background-color: rgba(243, 243, 243, 0.962);
-            height: 200px; 
+            height: 300px; 
             width: 350px; 
             border-radius: 6px;
             display: flex;
@@ -96,6 +89,7 @@ if(!isset($_SESSION["user_id"]) && empty($_SESSION["user_id"])){
             justify-content: center;
             width: 10vh;
         }
+
     </style>
 </head>
 <body>

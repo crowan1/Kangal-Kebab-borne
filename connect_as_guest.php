@@ -5,9 +5,6 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([2]);
 $user = $stmt->fetch();
 
-var_dump($user);
-
-
 if ($user) {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['first_name'] = $user['first_name'];

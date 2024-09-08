@@ -1,17 +1,21 @@
 <?php
 session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $index = isset($_POST['index']) ? intval($_POST['index']) : -1;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['index'])) {
+    $index = intval($_POST['index']);
+    
+    if (isset($_SESSION['cart'][$index])) {
+        // Supprime l'élément du panier
+        unset($_SESSION['cart'][$index]);
 
-    if ($index >= 0 && isset($_SESSION['cart'][$index])) {
-        
-        array_splice($_SESSION['cart'], $index, 1);
-        echo json_encode(['status' => 'success', 'cart' => $_SESSION['cart']]);
+        // Ré-indexer le panier pour éviter des trous dans l'indexation
+        $_SESSION['cart'] = array_values($_SESSION['cart']);
+
+        echo json_encode(['status' => 'success']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Index invalide']);
+        echo json_encode(['status' => 'error', 'message' => 'Article non trouvé dans le panier']);
     }
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Méthode de requête invalide']);
+    echo json_encode(['status' => 'error', 'message' => 'Requête invalide']);
 }
 ?>

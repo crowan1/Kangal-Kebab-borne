@@ -1,3 +1,124 @@
+<style>
+
+.pop-up-delete-order {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.popup-header {
+    background-color: #B20F0F;
+    color: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+}
+
+.popup-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    margin: 0;
+    font-size: 24px;
+}
+
+.popup-body {
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #333;
+}
+
+.popup-subtitle {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.popup-buttons {
+    padding-top: 10px;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5PX;
+}
+
+.popup-buttons .btn {
+    width: 45%;
+}
+
+#close-popup {
+    color: white;
+}
+
+
+    #close-popup {
+        color: white;
+    }
+
+    #submit-popup {
+        font-size: 30px;
+        color: #FFF;
+        
+    }
+
+    #cart-items {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .order-item {
+        width: max-content;
+    }
+
+    .delete-item {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 10; 
+    
+}
+
+.cart-item {
+    position: relative;
+    padding: 10px;
+    border: 2px solid #B20F0F;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: rgba(243, 241, 241, 0.5);
+}
+
+.btn-delete-order {
+    font-size: 30px;
+    border-radius: 5px;
+    background-color: #B20F0F;
+    width: auto;
+    color: white;
+}
+
+
+#cancel-order{
+    height: 60PX;
+    BORDER: NONE;
+    width: 100%;
+    PADDING: 0PX 50PX;
+}
+
+</style>
 <link rel="stylesheet" href="basket-menu.css">
 <div class="panier">
     <div class="accordion" id="accordionExample">
@@ -32,7 +153,7 @@
                 <hr>
                 <div class="panier-buttons">
 
-                    <!-- Pop-up pour annuler la commande -->
+                    
                     <div class="pop-up-delete-order" style="display: none;">
                         <div class="popup-header">
                             <h2 class="popup-title">Annuler la commande</h2>
@@ -43,12 +164,11 @@
                         <div class="popup-buttons">
                             <button type="button" class="btn btn-secondary" id="close-popup">Retour</button>
                             <form action="delete_order.php" method="POST" style="display: inline;">
-                                <button type="submit" class="btn btn-danger">Annuler ma commande</button>
+                                <button type="submit" class="btn-delete-order" id="cancel-order">Annuler</button>
                             </form>
                         </div>
                     </div>
 
-                    <!-- Bouton pour déclencher la pop-up -->
                     <button type="button" class="btn btn-danger" id="trigger-popup">
                         Annuler la commande
                     </button>
@@ -80,40 +200,3 @@
         document.querySelector('.pop-up-delete-order').style.display = 'none';
     });
 </script>
-
-<style>
-    #close-popup {
-        color: white;
-    }
-
-    #cart-items {
-        display: flex;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .order-item {
-        width: max-content;
-    }
-
-    .delete-item {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    z-index: 10; 
-}
-
-.cart-item {
-    position: relative;
-    padding: 10px;
-    border: 2px solid #B20F0F;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    background-color: rgba(243, 241, 241, 0.5);
-}
-
-</style>

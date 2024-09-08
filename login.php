@@ -28,17 +28,16 @@ session_start();
         .banniere {
             display: flex;
             justify-content: space-around;
-            align-items: center;
             width: 100%;
             height: 250px;
             background-color: #B20F0F;
         }
 
         .banniere img {
-            width: 30%;
-            height: 100%;
-            object-fit: cover;
+            width: 33.33%;
+            object-fit: contain;
         }
+
 
         .container-login {
             flex: 1;
@@ -53,8 +52,7 @@ session_start();
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
+            width: 60%;
             text-align: center;
         }
 
@@ -65,8 +63,8 @@ session_start();
         }
 
         .form-control {
-            height: 50px;
-            font-size: 16px;
+            height: 100px;
+            font-size: 25px;
         }
 
         .btn-login {
@@ -78,11 +76,33 @@ session_start();
             border: none;
             border-radius: 5px;
             margin-top: 20px;
-            font-size: 18px;
+            font-size: 30px;
         }
 
         .btn-login:hover {
             background-color: #e09e00;
+        }
+        .error-message {
+            color: #B20F0F;
+            font-size: 20px;
+        }
+
+        .a-index {
+            background-color: #B20F0F;
+            margin-top: 20px;
+            color: #fff;
+            font-weight: 700;
+            width: 100%;
+            text-decoration: none;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 30px;
+        }
+
+        #loginForm {
+            height: 250px;
         }
 
         @media (max-width: 576px) {
@@ -97,6 +117,8 @@ session_start();
             .login-box {
                 padding: 30px;
             }
+
+            
         }
     </style>
 </head>
@@ -112,10 +134,16 @@ session_start();
             <h2>Se connecter</h2>
             <form id="loginForm" action="./login_back.php" method="POST">
                 <div class="mb-3">
-                    <input type="text" class="form-control" id="username" name="code" placeholder="Entrez votre code ou email" required>
+                    <input type="text" class="form-control" id="username" name="code" placeholder="Entrez votre code" required>
+                    <?php
+                if (isset($_GET['error']) && $_GET['error'] == 1) {
+                    echo '<div class="error-message">Identifiant incorrect. Veuillez réessayer.</div>';
+                }
+                ?>
                 </div>
                 <button type="submit" class="btn btn-login">Se connecter</button>
             </form>
+            <a class="a-index" href="index.php">Retourner au choix</a>
         </div>
     </div>
 
